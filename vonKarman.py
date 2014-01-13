@@ -21,6 +21,8 @@ from scipy.sparse import dok_matrix
 import scipy.linalg
 import scipy.sparse.linalg
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 
 class Grid:
@@ -290,19 +292,20 @@ class PostProcessing:
    _self.D2H[i] = d2*(sim.H[i-1]-2*H[i]+sim.H[i+1]);
 
 class Plot:
- def __init__(_self,_x,_F,_G,_H):
+ def __init__(_self,_x,_F,_G,_H,_output):
 
- ## Plotando os perfis F, G e H ########################
-
-  plt.plot(_x,_F,_x,_G,_x,-_H)
-  #plt.axis([-0.05,15,-0.05,1.2])
-
-  plt.title('Partial result of F, G, -H')
-  plt.xlabel('Domain Length')
-  plt.ylabel('F, G, -H')
-  plt.legend(('F','G','-H'))
-
-  plt.show()
-  #savefig('test.pdf')
-
+  ## Plotando os perfis F, G e H ########################
+  fig = Figure(figsize=(6,4))
+  ax = fig.add_subplot(111)
+  ax.set_xlabel("Z")
+  ax.set_ylabel("F, G, -H")
+  ax.set_title("Velocities and Concentration profiles of rotating disk")
+  ax.plot(_x, _F,label="F")
+  ax.plot(_x, _G,label="G")
+  ax.plot(_x,-_H,label="-H")
+  ax.legend(loc=0)
+  ax.axis([-2.0,12.0,-0.2,1.2])
+  canvas = FigureCanvasAgg(fig)
+  canvas.print_figure(_output, dpi=100)
+  print "Plot " + _output + " saved!"
 

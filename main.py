@@ -19,10 +19,10 @@ bcType  = '1disk'
 
 grid  = vonKarman.Grid(length,npoints)
 init = vonKarman.InitConditions(grid,bcType)
-vonKarman.Plot(grid.x,init.F,init.G,init.H)
+vonKarman.Plot(grid.x,init.F,init.G,init.H,'init.pdf')
 bound = vonKarman.BoundaryConditions(grid,init)
-vonKarman.Plot(grid.x,bound.F,bound.G,bound.H)
+vonKarman.Plot(grid.x,bound.F,bound.G,bound.H,'bound.pdf')
 sim = vonKarman.Simulator(grid,init,bound,k,maxIter,corr,eps)
 
-vonKarman.Plot(grid.x,sim.F,sim.G,sim.H)
+vonKarman.Plot(grid.x,sim.F,sim.G,sim.H,'final.pdf')
 
