@@ -47,6 +47,17 @@ class InitConditions:
   _self.G = np.zeros(   (grid.npoints,1),                dtype=float) 
   _self.H = np.zeros(   (grid.npoints,1),                dtype=float)  
 
+  # Estas condicoes sao iguais para os 3 casos apresentados no IF ELSE
+  # first point
+  _self.F[1] = 0.0                            
+  _self.F[0] = -_self.F[1]                     
+  _self.G[0] = 1.0+grid.dx/2.0;              
+  _self.H[0] = -_self.H[1]                  
+
+  # last point
+  _self.F[grid.npoints-1] = -_self.F[grid.npoints-2] 
+  _self.G[grid.npoints-1] = -_self.G[grid.npoints-2] 
+
   ### Condicao para usar os perfis da Funcao_Sistema1 como c.i.
   if _self.bcType is '1disk':
    f1 = 0.4 
@@ -62,6 +73,9 @@ class InitConditions:
     _self.G[i] = np.exp(-i*g2)
     _self.H[i] = np.exp(-h1*grid.x[i])-np.exp(-h2*grid.x[i])
   
+   # last point
+   _self.H[grid.npoints-1] = -_self.H[grid.npoints-2] 
+
   elif _self.bcType is 'vonKarman':
    f1 = 0.4 
    f2 = 5*f1 
@@ -78,6 +92,9 @@ class InitConditions:
     _self.H[i] = h2*grid.x[i]
     if grid.x[i] > 4:
      _self.H[i] = h1
+
+   # last point
+   _self.H[grid.npoints-1] = -0.887   
   
   else:
    for i in xrange(2,grid.npoints-1):
@@ -85,36 +102,19 @@ class InitConditions:
     _self.G[i] = 0.0
     _self.H[i] = 0.0
 
+   # last point
+   _self.H[grid.npoints-1] = 0.0 
+
 
 class BoundaryConditions:
- def __init__(_self,_grid,_initCond):
+ def __init__(_self,_grid):
 
   grid = _grid
-  _self.bcType = _initCond.bcType
 
-  ### Building vectors F,G,H,b,r and matrix A
-  _self.F = _initCond.F
-  _self.G = _initCond.G
-  _self.H = _initCond.H
+  ### Building vectors b,r and matrix A
   _self.A = lil_matrix( (3*grid.npoints,3*grid.npoints), dtype='float32')
   _self.b = np.zeros(   (3*grid.npoints,1),              dtype=float)  
   _self.r = np.zeros(   (3*grid.npoints,1),              dtype=float) 
-
-  # first point
-  _self.F[0] = 0.0                                     # Dirichlet
-  _self.G[0] = 1.0+grid.dx/2.0;                        # Dirichlet
-  _self.H[0] = -_self.H[1]                             # Neumann
-
-  # last point
-  _self.F[grid.npoints-1] = -_self.F[grid.npoints-2]   # Neumann
-  _self.G[grid.npoints-1] = -_self.G[grid.npoints-2]   # Neumann
-
-  if _self.bcType is '1disk':
-   _self.H[grid.npoints-1] = -_self.H[grid.npoints-2]  # Neumann
-  elif _self.bcType is 'vonKarman':
-   _self.H[grid.npoints-1] = -0.887                    # Dirichlet
-  else:
-   _self.H[grid.npoints-1] = 0.0                       # Dirichlet
 
   ## Condicoes de contorno do residuo 
   # r(0,0)=0; r(1,0)=0; r(2,0)=0;
