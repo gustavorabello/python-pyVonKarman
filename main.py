@@ -13,13 +13,16 @@ maxIter = 1000
 corr    = 0.1
 eps     = 1e-08
 k       = 0.040739 
+#k       = 0.0
+bcType  = '1disk'
 
 
 grid  = vonKarman.Grid(length,npoints)
-bound = vonKarman.BoundaryConditions(grid)
-cond  = vonKarman.InitConditions(grid,bound,'1disk')
-vonKarman.Plot(grid.x,cond.F,cond.G,cond.H)
-sim = vonKarman.Simulator(grid,cond,bound,k,maxIter,corr,eps)
+init = vonKarman.InitConditions(grid,bcType)
+vonKarman.Plot(grid.x,init.F,init.G,init.H)
+bound = vonKarman.BoundaryConditions(grid,init)
+vonKarman.Plot(grid.x,bound.F,bound.G,bound.H)
+sim = vonKarman.Simulator(grid,init,bound,k,maxIter,corr,eps)
 
 vonKarman.Plot(grid.x,sim.F,sim.G,sim.H)
 
